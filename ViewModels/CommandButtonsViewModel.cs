@@ -14,6 +14,10 @@ namespace CSV_ObjectCrafter.ViewModels
         public ICommand ImportCommand { get; }
         public ICommand ExportCommand { get; }
 
+
+        public delegate void ImportEventHandler(object sender, HelperEventArgs e);
+        public event ImportEventHandler ImportButtonPressed;
+
         public CommandButtonsViewModel()
         {
             ImportCommand = new RelayCommand<object>(Import, CanImport);
@@ -27,7 +31,7 @@ namespace CSV_ObjectCrafter.ViewModels
 
         private void Import(object? obj)
         {
-            OpenFileDialog();
+            ImportButtonPressed(this, new HelperEventArgs { FilePath = OpenFileDialog() });            
         }
 
         private bool CanExport(object? obj)
