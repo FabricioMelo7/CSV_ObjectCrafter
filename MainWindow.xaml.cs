@@ -1,4 +1,6 @@
-﻿using CSV_ObjectCrafter.ViewModels;
+﻿using CSV_ObjectCrafter.Utils;
+using CSV_ObjectCrafter.ViewModels;
+using System.Data;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,12 +19,18 @@ namespace CSV_ObjectCrafter
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainViewModel? MainViewModel { get; set; }
-
         public MainWindow()
         {
             InitializeComponent();
-            MainViewModel = DataContext as MainViewModel;
+            var vm = DataContext as MainViewModel;          
+            
+            vm.UpdateDataGridEvent += UpdateDataGrid;
+        }
+
+        private void UpdateDataGrid(object sender, HelperEventArgs e)
+        {
+            DataView dv = new DataView(e.dataTable);
+            myDataGrid.ItemsSource = dv;
         }
 
         private void myDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)

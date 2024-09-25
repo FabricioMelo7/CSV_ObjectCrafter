@@ -38,9 +38,15 @@
 
         <DataGrid x:Name="myDataGrid"
                   Background="DarkGray"
-                  Grid.Column="0"
-                  Margin="0,0,5,0"
+                  Grid.Row="0"
                   SelectionChanged="myDataGrid_SelectionChanged"
-                  ItemsSource="{Binding Objects}"/>
+                  Height="auto"
+                  Width="auto"
+                  MinRowHeight="10"
+                  MinColumnWidth="10"
+                  AutoGenerateColumns="True">
+            
+
+        </DataGrid>
     </Grid>
 </Window>

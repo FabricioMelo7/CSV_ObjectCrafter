@@ -22,7 +22,7 @@
                 Height="50"
                 Width="200"
                 Command="{Binding ExportCommand}"
-                Margin="5 10 0 0"/>
+                Margin="5 10 0 0"/> 
 
         </StackPanel>
 
