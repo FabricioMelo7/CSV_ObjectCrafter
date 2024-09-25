@@ -40,9 +40,10 @@ namespace CSV_ObjectCrafter.Utils
                     {
                         string header = headers[i];
                         string? value = i < values.Length ? values[i] : null;
-                        recordDict[header] = value;                        
+                        recordDict[header] = value;
+                        recordDict["AbsoluteID"] = Guid.NewGuid().ToString();
                     }
-
+                                        
                     records.Add(record);
                 }
             }

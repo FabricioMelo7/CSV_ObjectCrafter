@@ -27,16 +27,18 @@ namespace CSV_ObjectCrafter.ViewModels
         public List<string>? Headers { get; set; }
 
         public List<ExpandoObject>? Records { get; set; }
+                
+        public DataTable dataTable { get; set; }       
 
-        private DataTable _dataTable;
-        public DataTable dataTable
+        private object? _SelectedObject;
+        public object SelectedObject // This will be moved to the DataModifying window later on, will leave here for now...
         {
-            get => _dataTable;
+            get => _SelectedObject;
             set
             {
-                _dataTable = value;
-                OnPropertyChanged(nameof(dataTable));
-            }
+                _SelectedObject = value;
+                OnPropertyChanged(nameof(SelectedObject));
+            }            
         }
 
         public delegate void UpdateDataGridHandler(object sender, HelperEventArgs e);
@@ -83,6 +85,8 @@ namespace CSV_ObjectCrafter.ViewModels
                     Headers.Add(header);
                 }
             }
+
+            Headers.Add("AbsoluteID");
         }
 
         private void SetDataGridRows()

@@ -44,9 +44,8 @@
                   Width="auto"
                   MinRowHeight="10"
                   MinColumnWidth="10"
-                  AutoGenerateColumns="True">
-            
+                  AutoGenerateColumns="True"
+                  AutoGeneratingColumn="myDataGrid_AutoGeneratingColumn"/>
 
-        </DataGrid>
     </Grid>
 </Window>

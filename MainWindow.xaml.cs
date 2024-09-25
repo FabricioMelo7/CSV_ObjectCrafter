@@ -19,12 +19,13 @@ namespace CSV_ObjectCrafter
     /// </summary>
     public partial class MainWindow : Window
     {
+        MainViewModel viewModel {  get; set; }
         public MainWindow()
         {
             InitializeComponent();
-            var vm = DataContext as MainViewModel;          
+            viewModel = DataContext as MainViewModel;          
             
-            vm.UpdateDataGridEvent += UpdateDataGrid;
+            viewModel.UpdateDataGridEvent += UpdateDataGrid;
         }
 
         private void UpdateDataGrid(object sender, HelperEventArgs e)
@@ -35,7 +36,42 @@ namespace CSV_ObjectCrafter
 
         private void myDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var dataGrid = sender as DataGrid;
+            DataRowView? rowView = dataGrid?.SelectedItem as DataRowView;
 
+            if (rowView != null)
+            {                
+                string? id = rowView["AbsoluteID"]?.ToString();
+
+                if (!string.IsNullOrEmpty(id))
+                {
+                    var selectedItem = viewModel.Records?.FirstOrDefault(r =>
+                    {
+                        var recordDic = (IDictionary<string, object>)r;
+
+                        if (recordDic.ContainsKey("AbsoluteID"))
+                        {
+                            return recordDic["AbsoluteID"]?.ToString() == id;
+                        }
+
+                        return false;
+                    });
+
+                    viewModel.SelectedObject = selectedItem ?? null;
+                }
+                else
+                {
+                    viewModel.SelectedObject = null;
+                }
+            }
+        }
+
+        private void myDataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
+        {
+            if(e.PropertyName == "AbsoluteID")
+            {
+                e.Column.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }
