@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Dynamic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -31,7 +32,7 @@ namespace CSV_ObjectCrafter.ViewModels
         public DataTable dataTable { get; set; }       
 
         private object? _SelectedObject;
-        public object SelectedObject // This will be moved to the DataModifying window later on, will leave here for now...
+        public object? SelectedObject // This will be moved to the DataModifying window later on, will leave here for now...
         {
             get => _SelectedObject;
             set
@@ -42,22 +43,30 @@ namespace CSV_ObjectCrafter.ViewModels
         }
 
         public delegate void UpdateDataGridHandler(object sender, HelperEventArgs e);
-        public event UpdateDataGridHandler UpdateDataGridEvent;
+        public event UpdateDataGridHandler? UpdateDataGridEvent;
 
         public MainViewModel()
         {
             commandButtonsVM = new CommandButtonsViewModel();
             commandButtonsVM.ImportButtonPressed += ParseImportedFile;
+            commandButtonsVM.ExportButtonPressed += ExportCsvFile;
             dataTable = new DataTable();
         }
 
         private void ParseImportedFile(object sender, HelperEventArgs e)
         {
+            if(Records != null) { Records.Clear(); } // Need to have a user confirmation before clearing the exiting records from the application.
+
             Records = (List<ExpandoObject>)Parser.ParseCsv(e.FilePath);
             SetDataGridColumns();
             SetDataGridRows();
 
             UpdateDataGridEvent?.Invoke(this, new HelperEventArgs { dataTable = dataTable});
+        }
+
+        private void ExportCsvFile(object sender, HelperEventArgs e)
+        {
+            Exporter.ExportDataToCsv(e.FilePath, Records, Headers);
         }
 
         private void SetDataGridColumns()
@@ -80,6 +89,7 @@ namespace CSV_ObjectCrafter.ViewModels
             else
             {
                 Headers.Clear();
+
                 foreach (var header in Parser.Headers)
                 {
                     Headers.Add(header);
@@ -111,7 +121,6 @@ namespace CSV_ObjectCrafter.ViewModels
                     {
                         row[column.ColumnName] = DBNull.Value;
                     }
-
                 }
 
                 dataTable.Rows.Add(row);

@@ -18,6 +18,9 @@ namespace CSV_ObjectCrafter.ViewModels
         public delegate void ImportEventHandler(object sender, HelperEventArgs e);
         public event ImportEventHandler ImportButtonPressed;
 
+        public delegate void ExportEventHandler(object sender, HelperEventArgs e);
+        public event ExportEventHandler ExportButtonPressed;
+
         public CommandButtonsViewModel()
         {
             ImportCommand = new RelayCommand<object>(Import, CanImport);
@@ -41,7 +44,7 @@ namespace CSV_ObjectCrafter.ViewModels
 
         private void Export(object? obj)
         {
-            SaveFileDialog();
+            ExportButtonPressed?.Invoke(this, new HelperEventArgs { FilePath = SaveFileDialog() });
         }
 
         private string SaveFileDialog()
