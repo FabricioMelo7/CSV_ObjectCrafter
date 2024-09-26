@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Data;
 using System.Dynamic;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace CSV_ObjectCrafter.ViewModels
@@ -23,7 +24,7 @@ namespace CSV_ObjectCrafter.ViewModels
         public DataTable dataTable { get; set; }
 
         private object? _SelectedObject;
-        public object? SelectedObject // This will be moved to the DataModifying window later on, will leave here for now...
+        public object? SelectedObject
         {
             get => _SelectedObject;
             set
@@ -46,13 +47,16 @@ namespace CSV_ObjectCrafter.ViewModels
 
         private void ParseImportedFile(object sender, HelperEventArgs e)
         {
-            if (Records != null) { Records.Clear(); } // Need to have a user confirmation before clearing the exiting records from the application.
+            if (Records == null || (Records != null && UserCheck()))
+            {
+                Records?.Clear();
 
-            Records = (List<ExpandoObject>)Parser.ParseCsv(e.FilePath);
-            SetDataGridColumns();
-            SetDataGridRows();
+                Records = (List<ExpandoObject>)Parser.ParseCsv(e.FilePath);
+                SetDataGridColumns();
+                SetDataGridRows();
 
-            UpdateDataGridEvent?.Invoke(this, new HelperEventArgs { dataTable = dataTable });
+                UpdateDataGridEvent?.Invoke(this, new HelperEventArgs { dataTable = dataTable });
+            }
         }
 
         private void ExportCsvFile(object sender, HelperEventArgs e)
@@ -63,6 +67,7 @@ namespace CSV_ObjectCrafter.ViewModels
         private void SetDataGridColumns()
         {
             SetHeaders();
+            if (dataTable.Columns.Count > 0) { dataTable.Columns.Clear(); }
 
             foreach (string hd in Headers.Distinct())
             {
@@ -130,6 +135,16 @@ namespace CSV_ObjectCrafter.ViewModels
                     recordDict[editedColumn] = newValue;
                 }
             }
+        }
+        private bool UserCheck()
+        {
+            MessageBoxResult result = MessageBox.Show(
+            "Importing a new CSV file will delete the current one, any changes made will be lost",
+            "Do you want to contine ?",
+            MessageBoxButton.OKCancel,
+            MessageBoxImage.Warning);
+
+            return result == MessageBoxResult.OK ? true : false;
         }
     }
 }
