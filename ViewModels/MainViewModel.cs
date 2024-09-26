@@ -66,7 +66,7 @@ namespace CSV_ObjectCrafter.ViewModels
 
         private void ExportCsvFile(object sender, HelperEventArgs e)
         {
-            Exporter.ExportDataToCsv(e.FilePath, Records, Headers);
+            Exporter.ExportDataToCsv(e.FilePath, Records);
         }
 
         private void SetDataGridColumns()
