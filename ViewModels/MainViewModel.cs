@@ -1,17 +1,8 @@
 ﻿using CSV_ObjectCrafter.Utils;
-using CSV_ObjectCrafter.Views;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Dynamic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
+using System.Windows.Controls;
 
 namespace CSV_ObjectCrafter.ViewModels
 {
@@ -28,8 +19,8 @@ namespace CSV_ObjectCrafter.ViewModels
         public List<string>? Headers { get; set; }
 
         public List<ExpandoObject>? Records { get; set; }
-                
-        public DataTable dataTable { get; set; }       
+
+        public DataTable dataTable { get; set; }
 
         private object? _SelectedObject;
         public object? SelectedObject // This will be moved to the DataModifying window later on, will leave here for now...
@@ -39,7 +30,7 @@ namespace CSV_ObjectCrafter.ViewModels
             {
                 _SelectedObject = value;
                 OnPropertyChanged(nameof(SelectedObject));
-            }            
+            }
         }
 
         public delegate void UpdateDataGridHandler(object sender, HelperEventArgs e);
@@ -55,13 +46,13 @@ namespace CSV_ObjectCrafter.ViewModels
 
         private void ParseImportedFile(object sender, HelperEventArgs e)
         {
-            if(Records != null) { Records.Clear(); } // Need to have a user confirmation before clearing the exiting records from the application.
+            if (Records != null) { Records.Clear(); } // Need to have a user confirmation before clearing the exiting records from the application.
 
             Records = (List<ExpandoObject>)Parser.ParseCsv(e.FilePath);
             SetDataGridColumns();
             SetDataGridRows();
 
-            UpdateDataGridEvent?.Invoke(this, new HelperEventArgs { dataTable = dataTable});
+            UpdateDataGridEvent?.Invoke(this, new HelperEventArgs { dataTable = dataTable });
         }
 
         private void ExportCsvFile(object sender, HelperEventArgs e)
@@ -73,7 +64,7 @@ namespace CSV_ObjectCrafter.ViewModels
         {
             SetHeaders();
 
-            foreach(string hd in Headers.Distinct())
+            foreach (string hd in Headers.Distinct())
             {
                 DataColumn column = new DataColumn(hd, typeof(string));
                 dataTable.Columns.Add(column);
@@ -103,13 +94,13 @@ namespace CSV_ObjectCrafter.ViewModels
         {
             dataTable.Rows.Clear();
 
-            foreach(var record in Records)
+            foreach (var record in Records)
             {
                 var row = dataTable.NewRow();
 
                 var recordDict = (IDictionary<string, object>)record;
 
-                foreach(DataColumn column in dataTable.Columns)
+                foreach (DataColumn column in dataTable.Columns)
                 {
                     if (recordDict.ContainsKey(column.ColumnName))
                     {
@@ -124,6 +115,20 @@ namespace CSV_ObjectCrafter.ViewModels
                 }
 
                 dataTable.Rows.Add(row);
+            }
+        }
+
+        public void CellModify(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (e.EditingElement is TextBox textBox)
+            {
+                var editedColumn = e.Column.Header.ToString();
+                var newValue = textBox.Text;
+
+                if (SelectedObject is IDictionary<string, object> recordDict && recordDict.ContainsKey(editedColumn))
+                {
+                    recordDict[editedColumn] = newValue;
+                }
             }
         }
     }

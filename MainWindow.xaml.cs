@@ -73,5 +73,10 @@ namespace CSV_ObjectCrafter
                 e.Column.Visibility = Visibility.Collapsed;
             }
         }
+
+        private void myDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            viewModel.CellModify(sender, e);
+        }
     }
 }
