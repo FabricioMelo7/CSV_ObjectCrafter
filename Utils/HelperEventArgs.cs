@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using CSV_ObjectCrafter.Enums;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CSV_ObjectCrafter.Utils
 {
@@ -12,5 +7,7 @@ namespace CSV_ObjectCrafter.Utils
     {
         public string? FilePath { get; set; }
         public DataTable? dataTable { get; set; }
+        public Themes ThemeColor { get; set; }
+
     }
 }

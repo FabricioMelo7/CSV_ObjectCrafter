@@ -1,4 +1,5 @@
-﻿using CSV_ObjectCrafter.Utils;
+﻿using CSV_ObjectCrafter.Enums;
+using CSV_ObjectCrafter.Utils;
 using System.ComponentModel;
 using System.Data;
 using System.Dynamic;
@@ -37,11 +38,27 @@ namespace CSV_ObjectCrafter.ViewModels
         public delegate void UpdateDataGridHandler(object sender, HelperEventArgs e);
         public event UpdateDataGridHandler? UpdateDataGridEvent;
 
+        public delegate void ChangeThemeColorHandler(object sender, HelperEventArgs e);
+        public event ChangeThemeColorHandler? ChangeThemeColorEvent;
+
+        private Themes _Theme;
+        public Themes Theme
+        {
+            get => _Theme;
+            set
+            {
+                _Theme = value;
+                OnPropertyChanged(nameof(Theme));
+            }
+        }
+
         public MainViewModel()
         {
             commandButtonsVM = new CommandButtonsViewModel();
             commandButtonsVM.ImportButtonPressed += ParseImportedFile;
             commandButtonsVM.ExportButtonPressed += ExportCsvFile;
+            commandButtonsVM.ThemeChangedEvent += ChangeThemeColor;
+            
             dataTable = new DataTable();
         }
 
@@ -145,6 +162,12 @@ namespace CSV_ObjectCrafter.ViewModels
             MessageBoxImage.Warning);
 
             return result == MessageBoxResult.OK ? true : false;
+        }
+
+        private void ChangeThemeColor(object sender, HelperEventArgs e)
+        {
+            Theme = e.ThemeColor;
+            ChangeThemeColorEvent?.Invoke(this, new HelperEventArgs { ThemeColor = Theme });
         }
     }
 }

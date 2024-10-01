@@ -7,23 +7,45 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     
+    <UserControl.Resources>
+        <Style TargetType="Button"
+               x:Key="ButtonStyle">
+            <Setter Property="Height"
+                    Value="auto"/>
+            <Setter Property="Width"
+                    Value="200"/>
+            <Setter Property="BorderBrush"
+                    Value="Black"/>
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+        </Style>
+    </UserControl.Resources>
+    
     <StackPanel>
         
-        <StackPanel Orientation="Vertical"
-                Margin="0 20 0 0">
+        <StackPanel Orientation="Horizontal"
+                Margin="0 0 0 0">
 
-            <Button Content="Import" 
-                    Height="50"
-                    Width="200"
-                    Margin="5 0 0 10"
+            <Button Style="{StaticResource ButtonStyle}"
+                    Content="Import" 
                     Command="{Binding ImportCommand}"/>
 
-            <Button Content="Export"
-                Height="50"
-                Width="200"
-                Command="{Binding ExportCommand}"
-                Margin="5 10 0 0"/> 
+            <Button Style="{StaticResource ButtonStyle}"
+                    Content="Export"                    
+                    Command="{Binding ExportCommand}"/>
 
+            <Label x:Name="ThemeLabel"
+                   Content="Theme :" 
+                   FontSize="12"/>
+
+            <ComboBox x:Name="ThemeComboBox"
+                      ItemsSource="{Binding AvailableThemes}"
+                      VerticalAlignment="Top"
+                      Height="23"
+                      Width="80"
+                      Margin="0 6 0 0"
+                      SelectionChanged="ComboBox_SelectionChanged"
+                      SelectedIndex="1"/>
         </StackPanel>
 
     </StackPanel>

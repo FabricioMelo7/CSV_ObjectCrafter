@@ -1,31 +1,23 @@
-﻿using CSV_ObjectCrafter.Utils;
+﻿using CSV_ObjectCrafter.Enums;
+using CSV_ObjectCrafter.Utils;
 using CSV_ObjectCrafter.ViewModels;
 using System.Data;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CSV_ObjectCrafter
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        MainViewModel viewModel {  get; set; }
+        MainViewModel viewModel { get; set; }
         public MainWindow()
         {
             InitializeComponent();
-            viewModel = DataContext as MainViewModel;          
-            
+            viewModel = DataContext as MainViewModel;
+
             viewModel.UpdateDataGridEvent += UpdateDataGrid;
+            viewModel.ChangeThemeColorEvent += UpdateThemeColor;
         }
 
         private void UpdateDataGrid(object sender, HelperEventArgs e)
@@ -40,7 +32,7 @@ namespace CSV_ObjectCrafter
             DataRowView? rowView = dataGrid?.SelectedItem as DataRowView;
 
             if (rowView != null)
-            {                
+            {
                 string? id = rowView["AbsoluteID"]?.ToString();
 
                 if (!string.IsNullOrEmpty(id))
@@ -68,7 +60,7 @@ namespace CSV_ObjectCrafter
 
         private void myDataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if(e.PropertyName == "AbsoluteID")
+            if (e.PropertyName == "AbsoluteID")
             {
                 e.Column.Visibility = Visibility.Collapsed;
             }
@@ -77,6 +69,25 @@ namespace CSV_ObjectCrafter
         private void myDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             viewModel.CellModify(sender, e);
+        }
+
+        private void UpdateThemeColor(object sender, HelperEventArgs e)
+        {
+            UpdateDataGridTheme(e.ThemeColor);
+            UpdateWindowTheme(e.ThemeColor);
+            myCommandButtons.ThemeLabel.Foreground = e.ThemeColor.Equals(Themes.Dark) ? Brushes.WhiteSmoke : Brushes.Black;            
+        }
+
+        private void UpdateDataGridTheme(Themes themes)
+        {
+            myDataGrid.Background = themes.Equals(Themes.Dark) ? Brushes.Black : Brushes.White;
+            myDataGrid.Foreground = themes.Equals(Themes.Dark) ? Brushes.Gray : Brushes.Black;
+            myDataGrid.RowBackground = themes.Equals(Themes.Dark) ? Brushes.Black : Brushes.WhiteSmoke;
+        }
+
+        private void UpdateWindowTheme(Themes themes)
+        {
+            myWindow.Background = themes.Equals(Themes.Dark) ? Brushes.Black : Brushes.WhiteSmoke;
         }
     }
 }

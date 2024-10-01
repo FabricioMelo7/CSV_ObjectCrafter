@@ -1,10 +1,6 @@
-﻿using CSV_ObjectCrafter.Utils;
+﻿using CSV_ObjectCrafter.Enums;
+using CSV_ObjectCrafter.Utils;
 using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace CSV_ObjectCrafter.ViewModels
@@ -14,6 +10,7 @@ namespace CSV_ObjectCrafter.ViewModels
         public ICommand ImportCommand { get; }
         public ICommand ExportCommand { get; }
 
+        public List<Themes> AvailableThemes { get; set; }
 
         public delegate void ImportEventHandler(object sender, HelperEventArgs e);
         public event ImportEventHandler ImportButtonPressed;
@@ -21,10 +18,14 @@ namespace CSV_ObjectCrafter.ViewModels
         public delegate void ExportEventHandler(object sender, HelperEventArgs e);
         public event ExportEventHandler ExportButtonPressed;
 
+        public delegate void ThemeChangedEventHandler(object sender, HelperEventArgs e);
+        public event ThemeChangedEventHandler ThemeChangedEvent;
+
         public CommandButtonsViewModel()
         {
             ImportCommand = new RelayCommand<object>(Import, CanImport);
             ExportCommand = new RelayCommand<object>(Export, CanExport);
+            AvailableThemes = new List<Themes>() { Themes.Dark, Themes.Light };
         }
 
         private bool CanImport(object? obj)
@@ -34,7 +35,7 @@ namespace CSV_ObjectCrafter.ViewModels
 
         private void Import(object? obj)
         {
-            ImportButtonPressed(this, new HelperEventArgs { FilePath = OpenFileDialog() });            
+            ImportButtonPressed(this, new HelperEventArgs { FilePath = OpenFileDialog() });
         }
 
         private bool CanExport(object? obj)
@@ -57,7 +58,7 @@ namespace CSV_ObjectCrafter.ViewModels
                 FileName = "Any"
 
             };
-            
+
             return saveFileDialog.ShowDialog() == true ? saveFileDialog.FileName : string.Empty;
         }
 
@@ -72,6 +73,16 @@ namespace CSV_ObjectCrafter.ViewModels
             };
 
             return openFileDialog.ShowDialog() == true ? openFileDialog.FileName : string.Empty;
+        }
+
+        public void ThemeChanged(string theme)
+        {
+            ThemeChangedEvent?.Invoke(this, new HelperEventArgs { ThemeColor = GetThemeColor(theme) });
+        }
+
+        private Themes GetThemeColor(string obj)
+        {
+            return obj == "Dark" ? Themes.Dark : Themes.Light;
         }
     }
 }
