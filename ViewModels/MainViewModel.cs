@@ -58,7 +58,7 @@ namespace CSV_ObjectCrafter.ViewModels
             commandButtonsVM.ImportButtonPressed += ParseImportedFile;
             commandButtonsVM.ExportButtonPressed += ExportCsvFile;
             commandButtonsVM.ThemeChangedEvent += ChangeThemeColor;
-            
+
             dataTable = new DataTable();
         }
 
@@ -74,6 +74,8 @@ namespace CSV_ObjectCrafter.ViewModels
 
                 UpdateDataGridEvent?.Invoke(this, new HelperEventArgs { dataTable = dataTable });
             }
+
+            commandButtonsVM.FileLoaded = true;
         }
 
         private void ExportCsvFile(object sender, HelperEventArgs e)
@@ -84,6 +86,7 @@ namespace CSV_ObjectCrafter.ViewModels
         private void SetDataGridColumns()
         {
             SetHeaders();
+
             if (dataTable.Columns.Count > 0) { dataTable.Columns.Clear(); }
 
             foreach (string hd in Headers.Distinct())
@@ -109,7 +112,7 @@ namespace CSV_ObjectCrafter.ViewModels
                 }
             }
 
-            Headers.Add("AbsoluteID");
+            Headers.Add("AbsoluteID"); // Although this won't be showing in the DataGrid, it has to be added as an invisible collumn so that the program can iterate through the objects ID's. Makes life easier
         }
 
         private void SetDataGridRows()
@@ -140,6 +143,31 @@ namespace CSV_ObjectCrafter.ViewModels
             }
         }
 
+        public void DataGridSelectionChange(DataRowView rowView)
+        {
+            if (rowView != null)
+            {
+                string? id = rowView["AbsoluteID"]?.ToString();
+
+                if (!string.IsNullOrEmpty(id))
+                {
+                    var selectedItem = Records?.FirstOrDefault(r =>
+                    {
+                        var recordDic = (IDictionary<string, object>)r;
+
+                        if (recordDic.ContainsKey("AbsoluteID"))
+                        {
+                            return recordDic["AbsoluteID"]?.ToString() == id;
+                        }
+
+                        return false;
+                    });
+
+                    SelectedObject = selectedItem ?? null;
+                }
+            }
+        }
+
         public void CellModify(object sender, DataGridCellEditEndingEventArgs e)
         {
             if (e.EditingElement is TextBox textBox)
@@ -147,12 +175,40 @@ namespace CSV_ObjectCrafter.ViewModels
                 var editedColumn = e.Column.Header.ToString();
                 var newValue = textBox.Text;
 
-                if (SelectedObject is IDictionary<string, object> recordDict && recordDict.ContainsKey(editedColumn))
+                if (SelectedObject is IDictionary<string, object> recordDict && recordDict.ContainsKey(editedColumn) && newValue != string.Empty)
                 {
                     recordDict[editedColumn] = newValue;
+                    recordDict["DefaultEntry"] = false;
                 }
+            }            
+
+            InsertNewBlankObject();
+        }
+
+        private void InsertNewBlankObject()
+        {
+            if (!EmptyItemExist(Records)) // If last row is not 'Default empty object' - Inserts a new empty row object
+            {
+                Records.Add(Parser.CreateBlankRowObject(Headers));
+                SetDataGridRows();
             }
         }
+
+        // Makes sure the last row is a 'Default empty object'
+        private bool EmptyItemExist(List<ExpandoObject> _records)
+        {
+            foreach (ExpandoObject record in _records)
+            {
+                if (record is IDictionary<string, object> recordDict && recordDict.ContainsKey("DefaultEntry") && recordDict["DefaultEntry"] is true)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
         private bool UserCheck()
         {
             MessageBoxResult result = MessageBox.Show(

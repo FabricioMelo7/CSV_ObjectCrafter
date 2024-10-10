@@ -81,5 +81,46 @@ namespace CSV_ObjectCrafter.Utils
 
             return csvBuilder.ToString();
         }
-    }
+
+
+        private static void RemoveEmptyObject(List<ExpandoObject> _records)
+        {
+           List<ExpandoObject> recordsToRemove = new List<ExpandoObject>();
+
+            foreach(ExpandoObject record in _records)
+            {
+                var recordDict = (IDictionary<string, object>)record;
+
+                //Assuming all fields except "AbsoluteID" are empty, unless proven otherwise
+                bool allFieldsEmpty = true; 
+
+                foreach(var key in recordDict.Keys)
+                {
+                    var value = recordDict[key];
+                    
+                    //Skip "AbsoluteIFD
+                    if(key == "AbsoluteID" || key == "DefaultEntry")
+                    {
+                        continue;
+                    }
+
+                    if(value != null && !(value is string stringValue && string.IsNullOrWhiteSpace(stringValue)))
+                    {
+                        allFieldsEmpty = false;
+                        break;
+                    }
+                }
+
+                if (allFieldsEmpty)
+                {
+                    recordsToRemove.Add(record);
+                }
+            }                     
+
+            foreach (var record in recordsToRemove)
+            {
+                _records.Remove(record);
+            }
+        }
+    }    
 }

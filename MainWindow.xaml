@@ -40,7 +40,8 @@
                   MinColumnWidth="10"
                   AutoGenerateColumns="True"
                   AutoGeneratingColumn="myDataGrid_AutoGeneratingColumn"
-                  CellEditEnding="myDataGrid_CellEditEnding"/>
+                  CellEditEnding="myDataGrid_CellEditEnding"
+                  CanUserAddRows="False"/>
 
     </Grid>
 </Window>

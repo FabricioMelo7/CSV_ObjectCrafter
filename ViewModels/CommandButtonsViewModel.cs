@@ -1,12 +1,14 @@
 ﻿using CSV_ObjectCrafter.Enums;
 using CSV_ObjectCrafter.Utils;
 using Microsoft.Win32;
+using System.Configuration;
 using System.Windows.Input;
 
 namespace CSV_ObjectCrafter.ViewModels
 {
     public class CommandButtonsViewModel
     {
+        public bool FileLoaded { get; set; }
         public ICommand ImportCommand { get; }
         public ICommand ExportCommand { get; }
 
@@ -40,7 +42,7 @@ namespace CSV_ObjectCrafter.ViewModels
 
         private bool CanExport(object? obj)
         {
-            return true;
+            return FileLoaded;
         }
 
         private void Export(object? obj)

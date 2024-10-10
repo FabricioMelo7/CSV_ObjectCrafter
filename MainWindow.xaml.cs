@@ -2,6 +2,7 @@
 using CSV_ObjectCrafter.Utils;
 using CSV_ObjectCrafter.ViewModels;
 using System.Data;
+using System.Dynamic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -30,32 +31,8 @@ namespace CSV_ObjectCrafter
         {
             var dataGrid = sender as DataGrid;
             DataRowView? rowView = dataGrid?.SelectedItem as DataRowView;
-
-            if (rowView != null)
-            {
-                string? id = rowView["AbsoluteID"]?.ToString();
-
-                if (!string.IsNullOrEmpty(id))
-                {
-                    var selectedItem = viewModel.Records?.FirstOrDefault(r =>
-                    {
-                        var recordDic = (IDictionary<string, object>)r;
-
-                        if (recordDic.ContainsKey("AbsoluteID"))
-                        {
-                            return recordDic["AbsoluteID"]?.ToString() == id;
-                        }
-
-                        return false;
-                    });
-
-                    viewModel.SelectedObject = selectedItem ?? null;
-                }
-                else
-                {
-                    viewModel.SelectedObject = null;
-                }
-            }
+            
+            viewModel.DataGridSelectionChange(rowView);
         }
 
         private void myDataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
@@ -88,6 +65,6 @@ namespace CSV_ObjectCrafter
         private void UpdateWindowTheme(Themes themes)
         {
             myWindow.Background = themes.Equals(Themes.Dark) ? Brushes.Black : Brushes.WhiteSmoke;
-        }
+        }        
     }
 }

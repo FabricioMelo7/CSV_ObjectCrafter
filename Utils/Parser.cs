@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 
 namespace CSV_ObjectCrafter.Utils
 {
@@ -40,15 +41,37 @@ namespace CSV_ObjectCrafter.Utils
                     {
                         string header = headers[i];
                         string? value = i < values.Length ? values[i] : null;
-                        recordDict[header] = value;
-                        recordDict["AbsoluteID"] = Guid.NewGuid().ToString();
+                        recordDict[header] = value;                        
                     }
-                                        
+
+                    recordDict["AbsoluteID"] = Guid.NewGuid().ToString();
+                    recordDict["DefaultEntry"] = false; // This is used to help with adding an empty row
+
                     records.Add(record);
                 }
+
+                records.Add(CreateBlankRowObject(Headers)); // Ends initial parsing with an empty row at the bottom of the DataGrid
+
             }
 
             return records;
+        }
+
+        public static ExpandoObject CreateBlankRowObject(List<string> _headers)
+        {
+            ExpandoObject newObject = new ExpandoObject();
+            var recordDict = (IDictionary<string, object>)newObject;
+            
+            for(int i = 0; i < _headers.Count; i++)
+            {
+                string header = _headers[i];
+                recordDict[header] = string.Empty;
+                recordDict["AbsoluteID"] = Guid.NewGuid().ToString();
+            }
+
+            recordDict["DefaultEntry"] = true;
+
+            return newObject;
         }
     }
 }
