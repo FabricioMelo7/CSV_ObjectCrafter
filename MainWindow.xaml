@@ -12,7 +12,7 @@
         Width="auto"
         MinHeight="500"
         MinWidth="200"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
         x:Name="myWindow">
 
     <Window.DataContext>

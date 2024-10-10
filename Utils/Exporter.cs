@@ -15,7 +15,7 @@ namespace CSV_ObjectCrafter.Utils
             }
         }
 
-        private static string? ShowSaveFileDialog(string title, string fileName)
+        public static string? ShowSaveFileDialog(string title, string fileName)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
@@ -47,7 +47,7 @@ namespace CSV_ObjectCrafter.Utils
 
                 foreach (var kvp in (IDictionary<string, object>)record)
                 {
-                    if (kvp.Key != "AbsoluteID")
+                    if (kvp.Key != "AbsoluteID" && kvp.Key != "DefaultEntry")
                     {
                         newRecordDict[kvp.Key] = kvp.Value;
                     }
@@ -55,6 +55,8 @@ namespace CSV_ObjectCrafter.Utils
 
                 safeRecords.Add(newRecord);
             }
+
+            RemoveEmptyObject(safeRecords);
 
             var csvBuilder = new StringBuilder();
 

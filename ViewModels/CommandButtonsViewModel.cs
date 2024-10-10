@@ -47,21 +47,7 @@ namespace CSV_ObjectCrafter.ViewModels
 
         private void Export(object? obj)
         {
-            ExportButtonPressed?.Invoke(this, new HelperEventArgs { FilePath = SaveFileDialog() });
-        }
-
-        private string SaveFileDialog()
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
-                Title = "Export",
-                Filter = "All Files (*.*)|*.*",
-                DefaultExt = "csv",
-                FileName = "Any"
-
-            };
-
-            return saveFileDialog.ShowDialog() == true ? saveFileDialog.FileName : string.Empty;
+            ExportButtonPressed?.Invoke(this, new HelperEventArgs { FilePath = Exporter.ShowSaveFileDialog("Export", "NewCSV") });
         }
 
         private string OpenFileDialog()
